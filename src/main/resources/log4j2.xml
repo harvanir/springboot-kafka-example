@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="debug" monitorInterval="5">
+	<Properties>
+		<property name="logDir">${bundle:application:log.file.directory}</property>
+	</Properties>
+
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="[%d{yyyy/MM/dd HH:mm:ss:SSS}] [%t] [%-5level] [%c{1.}:%L] : %msg%n" />
+		</Console>
+
+		<RollingRandomAccessFile 
+			name="server" 
+			fileName="${logDir}/server.log" 
+			filePattern="${logDir}/server.%d{yyyy-MM-dd-hhmm}.log.zip" 
+			immediateFlush="false" 
+			append="true">
+            <PatternLayout pattern="[%d{yyyy/MM/dd HH:mm:ss:SSS}] [%t] [%-5level] [%c{1.}:%L] : %msg%n"/>
+			  <Policies>
+				<SizeBasedTriggeringPolicy size="20 MB"/>
+			  </Policies>
+			<DefaultRolloverStrategy max="10"/>
+        </RollingRandomAccessFile>
+
+		<RollingRandomAccessFile 
+			name="app" 
+			fileName="${logDir}/app.log" 
+			filePattern="${logDir}/app.%d{yyyy-MM-dd-hhmm}.log.zip" 
+			immediateFlush="false" 
+			append="true">
+            <PatternLayout pattern="[%d{yyyy/MM/dd HH:mm:ss:SSS}] [%t] [%-5level] [%c{1.}:%L] : %msg%n"/>
+			  <Policies>
+				<SizeBasedTriggeringPolicy size="20 MB"/>
+			  </Policies>
+			<DefaultRolloverStrategy max="10"/>
+        </RollingRandomAccessFile>
+
+		<RollingRandomAccessFile 
+			name="spring" 
+			fileName="${logDir}/spring.log" 
+			filePattern="${logDir}/spring.%d{yyyy-MM-dd-hhmm}.log.zip" 
+			immediateFlush="false" 
+			append="true">
+            <PatternLayout pattern="[%d{yyyy/MM/dd HH:mm:ss:SSS}] [%t] [%-5level] [%c{1.}:%L] : %msg%n"/>
+			  <Policies>
+				<SizeBasedTriggeringPolicy size="20 MB"/>
+			  </Policies>
+			<DefaultRolloverStrategy max="10"/>
+        </RollingRandomAccessFile>
+
+		<RollingRandomAccessFile 
+			name="org" 
+			fileName="${logDir}/org.log" 
+			filePattern="${logDir}/org.%d{yyyy-MM-dd-hhmm}.log.zip" 
+			immediateFlush="false" 
+			append="true">
+            <PatternLayout pattern="[%d{yyyy/MM/dd HH:mm:ss:SSS}] [%t] [%-5level] [%c{1.}:%L] : %msg%n"/>
+			  <Policies>
+				<SizeBasedTriggeringPolicy size="20 MB"/>
+			  </Policies>
+			<DefaultRolloverStrategy max="10"/>
+        </RollingRandomAccessFile>
+	</Appenders>
+
+	<Loggers>
+		<AsyncLogger name="org.harvan" level="debug" additivity="false" includeLocation="true">
+			<AppenderRef ref="app" />
+		</AsyncLogger>
+
+		<AsyncLogger name="org.springframework" level="info" additivity="false" includeLocation="true">
+			<AppenderRef ref="spring" />
+		</AsyncLogger>
+
+		<AsyncLogger name="org" level="info" additivity="false" includeLocation="true">
+			<AppenderRef ref="org" />
+		</AsyncLogger>
+
+		<AsyncRoot level="info" includeLocation="true">
+			<AppenderRef ref="server" />
+		</AsyncRoot>
+	</Loggers>
+</Configuration>
