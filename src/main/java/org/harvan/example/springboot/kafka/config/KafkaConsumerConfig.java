@@ -16,6 +16,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.AbstractMessageListenerContainer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,31 +29,37 @@ import java.util.Map;
 @EnableKafka
 @Configuration
 public class KafkaConsumerConfig {
-    private final Log logger = LogFactory.getLog(getClass());
-    @Value(value = "${kafka.bootstrapAddress}")
-    private String bootstrapAddress;
+  private final Log logger = LogFactory.getLog(getClass());
 
-    Log logger() {
-        return logger;
-    }
+  @Value(value = "${kafka.bootstrapAddress}")
+  private String bootstrapAddress;
 
-    public ConsumerFactory<String, String> consumerFactory() {
-        Map<String, Object> configs = new HashMap<>();
+  Log logger() {
+    return logger;
+  }
 
-        configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        configs.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaConsumerTestConstant.GROUP_ID);
-        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+  public ConsumerFactory<String, String> consumerFactory() {
+    Map<String, Object> configs = new HashMap<>();
 
-        return new DefaultKafkaConsumerFactory<>(configs);
-    }
+    configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+    configs.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaConsumerTestConstant.GROUP_ID);
+    configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+    configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+    configs.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 
-    @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    return new DefaultKafkaConsumerFactory<>(configs);
+  }
 
-        factory.setConsumerFactory(consumerFactory());
+  @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
+    ConcurrentKafkaListenerContainerFactory<String, String> factory =
+        new ConcurrentKafkaListenerContainerFactory<>();
 
-        return factory;
-    }
+    factory.setConsumerFactory(consumerFactory());
+    factory
+        .getContainerProperties()
+        .setAckMode(AbstractMessageListenerContainer.AckMode.MANUAL_IMMEDIATE);
+
+    return factory;
+  }
 }
